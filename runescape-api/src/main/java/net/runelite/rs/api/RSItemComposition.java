@@ -69,4 +69,7 @@ public interface RSItemComposition extends ItemComposition
 
 	@Import("maleModel")
 	int getMaleModel();
+
+	@Import("isTradable")
+	boolean isTradable();
 }

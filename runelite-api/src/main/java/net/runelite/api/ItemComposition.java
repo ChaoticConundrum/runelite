@@ -81,4 +81,11 @@ public interface ItemComposition
 	 * @return true if stackable, false otherwise
 	 */
 	boolean isStackable();
+
+	/**
+	 * Returns whether or not an item is player tradable
+	 *
+	 * @return true if tradable, false if otherwise
+	 */
+	boolean isTradable();
 }
