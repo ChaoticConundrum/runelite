@@ -24,26 +24,41 @@
  */
 package net.runelite.client.plugins.notes;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.KeyStroke;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.ui.PluginPanel;
 
 import java.awt.BorderLayout;
+import java.awt.Event;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
 @Slf4j
 public class NotesPanel extends PluginPanel
 {
 	private final JEditorPane notesEditor = new JEditorPane();
+	private NotesConfig config;
+	private String notesCache;
 
 	void init(NotesConfig config)
 	{
+		this.config = config;
+
 		// this may or may not qualify as a hack
 		// but this lets the editor pane expand to fill the whole parent panel
 		getParent().setLayout(new BorderLayout());
@@ -58,9 +73,72 @@ public class NotesPanel extends PluginPanel
 		notesEditor.setContentType("text/plain");
 
 		// load note text
-		String data = config.notesData();
-		notesEditor.setText(data);
+		notesCache = config.notesData();
+		notesEditor.setText(notesCache);
 
+		// add undo manager edit listener
+		UndoManager undoManager = new UndoManager();
+		notesEditor.getDocument().addUndoableEditListener(new UndoableEditListener()
+		{
+			@Override
+			public void undoableEditHappened(UndoableEditEvent e)
+			{
+				undoManager.addEdit(e.getEdit());
+			}
+		});
+
+		// add undo/redo actions
+		notesEditor.getActionMap().put("undoAction", new AbstractAction("Undo")
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				try {
+					if (undoManager.canUndo())
+					{
+						undoManager.undo();
+					}
+				}
+				catch (CannotUndoException ex)
+				{
+
+				}
+			}
+		});
+		notesEditor.getActionMap().put("redoAction", new AbstractAction("Redo")
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				try {
+					if (undoManager.canRedo())
+					{
+						undoManager.redo();
+					}
+				}
+				catch (CannotRedoException ex)
+				{
+
+				}
+			}
+		});
+
+		// add save action
+		notesEditor.getActionMap().put("saveAction", new AbstractAction("Save")
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				updateNotes();
+			}
+		});
+
+		// keyboard shortcuts
+		notesEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK), "undoAction");
+		notesEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.CTRL_MASK), "redoAction");
+		notesEditor.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK), "saveAction");
+
+		// save note on focus loss
 		notesEditor.addFocusListener(new FocusListener()
 		{
 			@Override
@@ -72,21 +150,7 @@ public class NotesPanel extends PluginPanel
 			@Override
 			public void focusLost(FocusEvent e)
 			{
-				notesChanged(notesEditor.getDocument());
-			}
-
-			private void notesChanged(Document doc)
-			{
-				try
-				{
-					// get document text and save to config whenever editor is changed
-					String data = doc.getText(0, doc.getLength());
-					config.notesData(data);
-				}
-				catch (BadLocationException ex)
-				{
-					log.warn("Notes Document Bad Location: " + ex);
-				}
+				updateNotes();
 			}
 		});
 		add(notesEditor, BorderLayout.CENTER);
@@ -94,6 +158,18 @@ public class NotesPanel extends PluginPanel
 
 	void setNotes(String data)
 	{
-		notesEditor.setText(data);
+		notesCache = data;
+		notesEditor.setText(notesCache);
+	}
+
+	private void updateNotes()
+	{
+		// get editor text and save to config when changed
+		String data = notesEditor.getText();
+		if (!data.equals(notesCache))
+		{
+			notesCache = data;
+			config.notesData(notesCache);
+		}
 	}
 }
