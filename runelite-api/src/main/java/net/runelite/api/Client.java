@@ -68,6 +68,8 @@ public interface Client extends GameEngine
 	 */
 	int getCameraPitch();
 
+	void setCameraPitch(int pitch);
+
 	int getCameraYaw();
 
 	int getWorld();

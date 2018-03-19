@@ -68,6 +68,15 @@ public abstract class CameraMixin implements RSClient
 		}
 	}
 
+	@Inject
+	public void setCameraPitch(int pitch)
+	{
+		if (!pitchRelaxEnabled)
+		{
+			pitch = Math.min(pitch, STANDARD_PITCH_MAX);
+		}
+		client.setCameraPitchTarget(pitch);
+	}
 
 	@FieldHook("cameraPitchTarget")
 	@Inject
