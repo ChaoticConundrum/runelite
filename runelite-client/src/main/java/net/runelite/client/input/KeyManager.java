@@ -47,27 +47,30 @@ public class KeyManager
 		keyListeners.remove(keyListener);
 	}
 
-	public void processKeyPressed(KeyEvent keyEvent)
+	public KeyEvent processKeyPressed(KeyEvent keyEvent)
 	{
 		for (KeyListener keyListener : keyListeners)
 		{
 			keyListener.keyPressed(keyEvent);
 		}
+		return keyEvent.isConsumed() ? null : keyEvent;
 	}
 
-	public void processKeyReleased(KeyEvent keyEvent)
+	public KeyEvent processKeyReleased(KeyEvent keyEvent)
 	{
 		for (KeyListener keyListener : keyListeners)
 		{
 			keyListener.keyReleased(keyEvent);
 		}
+		return keyEvent.isConsumed() ? null : keyEvent;
 	}
 
-	public void processKeyTyped(KeyEvent keyEvent)
+	public KeyEvent processKeyTyped(KeyEvent keyEvent)
 	{
 		for (KeyListener keyListener : keyListeners)
 		{
 			keyListener.keyTyped(keyEvent);
 		}
+		return keyEvent.isConsumed() ? null : keyEvent;
 	}
 }

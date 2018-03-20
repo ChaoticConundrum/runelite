@@ -47,10 +47,10 @@ public abstract class RSKeyFocusListenerMixin implements RSKeyFocusListener
 	@Replace("keyPressed")
 	public final synchronized void keyPressed(KeyEvent keyEvent)
 	{
-		Hooks.keyPressed(keyEvent);
-		if (!keyEvent.isConsumed())
+		final KeyEvent newKeyEvent = Hooks.keyPressed(keyEvent);
+		if (newKeyEvent != null)
 		{
-			rs$keyPressed(keyEvent);
+			rs$keyPressed(newKeyEvent);
 		}
 	}
 
@@ -58,10 +58,10 @@ public abstract class RSKeyFocusListenerMixin implements RSKeyFocusListener
 	@Replace("keyReleased")
 	public final synchronized void keyReleased(KeyEvent keyEvent)
 	{
-		Hooks.keyReleased(keyEvent);
-		if (!keyEvent.isConsumed())
+		final KeyEvent newKeyEvent = Hooks.keyReleased(keyEvent);
+		if (newKeyEvent != null)
 		{
-			rs$keyReleased(keyEvent);
+			rs$keyReleased(newKeyEvent);
 		}
 	}
 
@@ -69,10 +69,10 @@ public abstract class RSKeyFocusListenerMixin implements RSKeyFocusListener
 	@Replace("keyTyped")
 	public final void keyTyped(KeyEvent keyEvent)
 	{
-		Hooks.keyTyped(keyEvent);
-		if (!keyEvent.isConsumed())
+		final KeyEvent newKeyEvent = Hooks.keyTyped(keyEvent);
+		if (newKeyEvent != null)
 		{
-			rs$keyTyped(keyEvent);
+			rs$keyTyped(newKeyEvent);
 		}
 	}
 }

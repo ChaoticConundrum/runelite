@@ -88,17 +88,17 @@ public class Hooks
 		throw new RuntimeException();
 	}
 
-	public static void keyPressed(KeyEvent keyEvent)
+	public static KeyEvent keyPressed(KeyEvent keyEvent)
 	{
 		throw new RuntimeException();
 	}
 
-	public static void keyReleased(KeyEvent keyEvent)
+	public static KeyEvent keyReleased(KeyEvent keyEvent)
 	{
 		throw new RuntimeException();
 	}
 
-	public static void keyTyped(KeyEvent keyEvent)
+	public static KeyEvent keyTyped(KeyEvent keyEvent)
 	{
 		throw new RuntimeException();
 	}
