@@ -25,7 +25,6 @@
 package net.runelite.client.plugins.wasdcamera;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
 import net.runelite.client.input.KeyListener;
 
 import javax.inject.Inject;
