@@ -192,19 +192,19 @@ public class Hooks
 		return mouseManager.processMouseWheelMoved(event);
 	}
 
-	public static KeyEvent keyPressed(KeyEvent keyEvent)
+	public static void keyPressed(KeyEvent keyEvent)
 	{
-		return keyManager.processKeyPressed(keyEvent);
+		keyManager.processKeyPressed(keyEvent);
 	}
 
-	public static KeyEvent keyReleased(KeyEvent keyEvent)
+	public static void keyReleased(KeyEvent keyEvent)
 	{
-		return keyManager.processKeyReleased(keyEvent);
+		keyManager.processKeyReleased(keyEvent);
 	}
 
-	public static KeyEvent keyTyped(KeyEvent keyEvent)
+	public static void keyTyped(KeyEvent keyEvent)
 	{
-		return keyManager.processKeyTyped(keyEvent);
+		keyManager.processKeyTyped(keyEvent);
 	}
 
 	public static void draw(MainBufferProvider mainBufferProvider, Graphics graphics, int x, int y)
