@@ -341,8 +341,8 @@ public class class195 {
                            class90.loginIndex = 0;
                            class90.username = "";
                            class90.password = "";
-                           class80.field1251 = 0;
-                           Coordinates.field2779 = "";
+                           class80.authPin = 0;
+                           Coordinates.authPinStr = "";
                            class90.field1350 = true;
                         }
 
@@ -390,8 +390,8 @@ public class class195 {
                                  class90.loginIndex = 0;
                                  class90.username = "";
                                  class90.password = "";
-                                 class80.field1251 = 0;
-                                 Coordinates.field2779 = "";
+                                 class80.authPin = 0;
+                                 Coordinates.authPinStr = "";
                                  class90.field1350 = true;
                               } else if(class90.field1351 == 0) {
                                  if(class85.keyPressCode == 85 && class90.username.length() > 0) {
@@ -461,14 +461,14 @@ public class class195 {
                            var20 = class90.loginWindowX + 180 - 80;
                            var22 = 321;
                            if(var14 == 1 && var17 >= var20 - 75 && var17 <= var20 + 75 && var18 >= var22 - 20 && var18 <= var22 + 20) {
-                              Coordinates.field2779.trim();
-                              if(Coordinates.field2779.length() != 6) {
+                              Coordinates.authPinStr.trim();
+                              if(Coordinates.authPinStr.length() != 6) {
                                  class93.method1974("", "Please enter a 6-digit PIN.", "");
                                  return;
                               }
 
-                              class80.field1251 = Integer.parseInt(Coordinates.field2779);
-                              Coordinates.field2779 = "";
+                              class80.authPin = Integer.parseInt(Coordinates.authPinStr);
+                              Coordinates.authPinStr = "";
                               Player.method1218(true);
                               class93.method1974("", "Connecting to server...", "");
                               class20.setGameState(20);
@@ -488,8 +488,8 @@ public class class195 {
                               class90.loginIndex = 0;
                               class90.username = "";
                               class90.password = "";
-                              class80.field1251 = 0;
-                              Coordinates.field2779 = "";
+                              class80.authPin = 0;
+                              Coordinates.authPinStr = "";
                            }
 
                            while(class290.method5196()) {
@@ -506,30 +506,30 @@ public class class195 {
                                  class90.loginIndex = 0;
                                  class90.username = "";
                                  class90.password = "";
-                                 class80.field1251 = 0;
-                                 Coordinates.field2779 = "";
+                                 class80.authPin = 0;
+                                 Coordinates.authPinStr = "";
                               } else {
-                                 if(class85.keyPressCode == 85 && Coordinates.field2779.length() > 0) {
-                                    Coordinates.field2779 = Coordinates.field2779.substring(0, Coordinates.field2779.length() - 1);
+                                 if(class85.keyPressCode == 85 && Coordinates.authPinStr.length() > 0) {
+                                    Coordinates.authPinStr = Coordinates.authPinStr.substring(0, Coordinates.authPinStr.length() - 1);
                                  }
 
                                  if(class85.keyPressCode == 84) {
-                                    Coordinates.field2779.trim();
-                                    if(Coordinates.field2779.length() != 6) {
+                                    Coordinates.authPinStr.trim();
+                                    if(Coordinates.authPinStr.length() != 6) {
                                        class93.method1974("", "Please enter a 6-digit PIN.", "");
                                        return;
                                     }
 
-                                    class80.field1251 = Integer.parseInt(Coordinates.field2779);
-                                    Coordinates.field2779 = "";
+                                    class80.authPin = Integer.parseInt(Coordinates.authPinStr);
+                                    Coordinates.authPinStr = "";
                                     Player.method1218(true);
                                     class93.method1974("", "Connecting to server...", "");
                                     class20.setGameState(20);
                                     return;
                                  }
 
-                                 if(var23 && Coordinates.field2779.length() < 6) {
-                                    Coordinates.field2779 = Coordinates.field2779 + Size.keyTypeCode;
+                                 if(var23 && Coordinates.authPinStr.length() < 6) {
+                                    Coordinates.authPinStr = Coordinates.authPinStr + Size.keyTypeCode;
                                  }
                               }
                            }

@@ -780,11 +780,11 @@ public class class190 {
 
                         var9.field2944 = Client.cycleCntr;
                         if(var9.field2920 != null) {
-                           for(var47 = 0; var47 < Client.field869; ++var47) {
+                           for(var47 = 0; var47 < Client.widgetKeyIndex; ++var47) {
                               ScriptEvent var37 = new ScriptEvent();
                               var37.widget = var9;
-                              var37.field780 = Client.field1069[var47];
-                              var37.field781 = Client.field1068[var47];
+                              var37.field780 = Client.widgetPressEvents[var47];
+                              var37.field781 = Client.widgetTypeEvents[var47];
                               var37.objs = var9.field2920;
                               Client.field1045.addFront(var37);
                            }

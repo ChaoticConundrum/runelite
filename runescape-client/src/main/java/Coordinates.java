@@ -13,7 +13,7 @@ public class Coordinates {
    )
    static int field2778;
    @ObfuscatedName("ba")
-   static String field2779;
+   static String authPinStr;
    @ObfuscatedName("t")
    @ObfuscatedGetter(
       intValue = -268789449

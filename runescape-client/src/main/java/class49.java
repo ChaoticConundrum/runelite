@@ -534,7 +534,7 @@ public class class49 implements WorldMapSectionBase {
                var29 += 15;
                var0.drawTextCentered(class90.loginMessage3, class90.loginWindowX + 180, var29, 16777215, 0);
                var29 += 15;
-               var0.method5500("PIN: " + Fonts.method5483(Coordinates.field2779) + (Client.gameCycle % 40 < 20?class37.getColTags(16776960) + "|":""), class90.loginWindowX + 180 - 108, var29, 16777215, 0);
+               var0.method5500("PIN: " + Fonts.method5483(Coordinates.authPinStr) + (Client.gameCycle % 40 < 20?class37.getColTags(16776960) + "|":""), class90.loginWindowX + 180 - 108, var29, 16777215, 0);
                var29 -= 8;
                var0.method5500("Trust this computer", class90.loginWindowX + 180 - 9, var29, 16776960, 0);
                var29 += 15;

@@ -14,7 +14,7 @@ public final class class80 extends Node {
    @ObfuscatedGetter(
       intValue = 1228636255
    )
-   static int field1251;
+   static int authPin;
    @ObfuscatedName("q")
    @ObfuscatedGetter(
       intValue = -1101768053

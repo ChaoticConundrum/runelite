@@ -200,8 +200,8 @@ public class GrandExchangeEvents {
             class90.password = "";
          }
 
-         class80.field1251 = 0;
-         Coordinates.field2779 = "";
+         class80.authPin = 0;
+         Coordinates.authPinStr = "";
          class90.field1350 = true;
          class90.worldSelectShown = false;
          if(!MapIcon.preferences.muted) {

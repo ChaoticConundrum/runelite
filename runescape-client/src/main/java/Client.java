@@ -34,8 +34,10 @@ public final class Client extends GameEngine implements class302 {
       longValue = 3118159769713057027L
    )
    static long field1059;
+
    @ObfuscatedName("nc")
    static boolean[] field1051;
+
    @ObfuscatedName("nj")
    static boolean[] field1053;
    @ObfuscatedName("nt")
@@ -270,7 +272,7 @@ public final class Client extends GameEngine implements class302 {
    @ObfuscatedGetter(
       intValue = -1107398325
    )
-   static int field869;
+   static int widgetKeyIndex;
    @ObfuscatedName("qf")
    static short field1102;
    @ObfuscatedName("qa")
@@ -310,14 +312,14 @@ public final class Client extends GameEngine implements class302 {
    @Export("chatCycle")
    static int chatCycle;
    @ObfuscatedName("ol")
-   static int[] field1069;
+   static int[] widgetPressEvents;
    @ObfuscatedName("mh")
    @ObfuscatedSignature(
       signature = "Lhf;"
    )
    static Deque field1046;
    @ObfuscatedName("or")
-   static int[] field1068;
+   static int[] widgetTypeEvents;
    @ObfuscatedName("ml")
    @ObfuscatedSignature(
       signature = "Lhf;"
@@ -1412,9 +1414,9 @@ public final class Client extends GameEngine implements class302 {
       field1064 = "";
       field1065 = new long[100];
       field1066 = 0;
-      field869 = 0;
-      field1068 = new int[128];
-      field1069 = new int[128];
+      widgetKeyIndex = 0;
+      widgetTypeEvents = new int[128];
+      widgetPressEvents = new int[128];
       field1070 = -1L;
       field1071 = -1;
       field1048 = 0;
@@ -2426,7 +2428,7 @@ public final class Client extends GameEngine implements class302 {
             switch(field887.field2128) {
             case 0:
             case 2:
-               var20.put24bitInt(class80.field1251);
+               var20.put24bitInt(class80.authPin);
                var20.offset += 5;
                break;
             case 1:
@@ -3166,16 +3168,16 @@ public final class Client extends GameEngine implements class302 {
                   draggedOnWidget = null;
                   field1095 = false;
                   field1024 = false;
-                  field869 = 0;
+                  widgetKeyIndex = 0;
 
-                  while(class290.method5196() && field869 < 128) {
+                  while(class290.method5196() && widgetKeyIndex < 128) {
                      if(rights >= 2 && KeyFocusListener.keyPressed[82] && class85.keyPressCode == 66) {
                         String var26 = class61.method1092();
                         class249.clientInstance.method923(var26);
                      } else if(field923 != 1 || Size.keyTypeCode <= 0) {
-                        field1069[field869] = class85.keyPressCode;
-                        field1068[field869] = Size.keyTypeCode;
-                        ++field869;
+                        widgetPressEvents[widgetKeyIndex] = class85.keyPressCode;
+                        widgetTypeEvents[widgetKeyIndex] = Size.keyTypeCode;
+                        ++widgetKeyIndex;
                      }
                   }
 
