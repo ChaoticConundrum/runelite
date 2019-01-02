@@ -72,6 +72,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 
 	// Overlay state validation
 	private Rectangle viewportBounds;
+	private Rectangle majorViewportBounds;
 	private Rectangle chatboxBounds;
 	private int viewportOffset;
 	private boolean chatboxHidden;
@@ -433,7 +434,9 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 
 		if (viewportChanged)
 		{
-			viewportBounds = client.getViewportWidget().getBounds();
+			Widget viewport = client.getViewportWidget();
+			viewportBounds = viewport.getBounds();
+			majorViewportBounds = viewport.getParent().getBounds();
 			changed = true;
 		}
 
@@ -455,7 +458,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 			viewportOffset + BORDER_TOP);
 
 		final Point topCenterPoint = new Point(
-			viewportOffset + viewportBounds.width / 2,
+			viewportOffset + majorViewportBounds.width / 2,
 			viewportOffset + BORDER
 		);
 
