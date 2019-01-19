@@ -26,50 +26,39 @@
  */
 package net.runelite.client.plugins.runedoku;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
-import net.runelite.api.ItemContainer;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.plugins.puzzlesolver.solver.PuzzleSolver;
-import net.runelite.client.plugins.puzzlesolver.solver.PuzzleState;
-import net.runelite.client.plugins.puzzlesolver.solver.heuristics.ManhattanDistance;
-import net.runelite.client.plugins.puzzlesolver.solver.pathfinding.IDAStar;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.OverlayUtil;
-import net.runelite.client.ui.overlay.components.BackgroundComponent;
-import net.runelite.client.ui.overlay.components.TextComponent;
 
 @Slf4j
 public class RuneDokuOverlay extends Overlay
 {
+
+	public static final int ROGUE_TRADER_PUZZLE_GROUP_ID = 288;
+
+	public static class RogueTrader
+	{
+		public static final int FIRST_TILE = 10;
+		public static final int RUNE_GRID = 131;
+	}
+
 	private final Client client;
 	private final ScheduledExecutorService executorService;
 	private final ItemManager itemManager;
@@ -98,10 +87,10 @@ public class RuneDokuOverlay extends Overlay
 	}
 
 	@Override
-	public Dimension render(Graphics2D graphics, Point parent)
+	public Dimension render(Graphics2D graphics)
 	{
 		// get rogue trader rune puzzle widget
-		Widget runeDoku  = client.getWidget(WidgetInfo.ROGUE_TRADER_PUZZLE_GRID);
+		Widget runeDoku = client.getWidget(ROGUE_TRADER_PUZZLE_GROUP_ID, RogueTrader.RUNE_GRID);
 		if (runeDoku != null)
 		{
 			if (!runeDoku.isHidden())
@@ -184,7 +173,7 @@ public class RuneDokuOverlay extends Overlay
 			}
 
 			// grid of widgets child ids are sequential
-			Widget w = client.getWidget(WidgetID.ROGUE_TRADER_PUZZLE_GROUP_ID, WidgetID.RogueTrader.FIRST_TILE + i);
+			Widget w = client.getWidget(ROGUE_TRADER_PUZZLE_GROUP_ID, RogueTrader.FIRST_TILE + i);
 			// draw sprites over each tile widget
 			OverlayUtil.renderImageLocation(graphics, w.getCanvasLocation(), runeSprites[solvedPuzzle[i] - 1]);
 		}

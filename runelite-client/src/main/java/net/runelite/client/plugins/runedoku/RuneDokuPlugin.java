@@ -25,12 +25,12 @@
  */
 package net.runelite.client.plugins.runedoku;
 
-import com.google.inject.Provides;
-import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
-import net.runelite.client.config.ConfigManager;
+
+import net.runelite.api.Client;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @PluginDescriptor(
 	name = "Rogue Trader"
@@ -38,14 +38,23 @@ import net.runelite.client.plugins.PluginDescriptor;
 public class RuneDokuPlugin extends Plugin
 {
 	@Inject
-	private RuneDokuOverlay puzzleSolverOverlay;
+	private OverlayManager overlayManager;
 
 	@Inject
-	private ScheduledExecutorService executorService;
+	private RuneDokuOverlay overlay;
+
+	@Inject
+	private Client client;
 
 	@Override
-	public RuneDokuOverlay getOverlay()
+	protected void startUp() throws Exception
 	{
-		return puzzleSolverOverlay;
+		overlayManager.add(overlay);
+	}
+
+	@Override
+	protected void shutDown() throws Exception
+	{
+		overlayManager.remove(overlay);
 	}
 }
