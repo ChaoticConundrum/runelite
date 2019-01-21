@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2017, Devin French <https://github.com/devinfrench>
  * Copyright (c) 2018, DrizzyBot <https://github.com/drizzybot>
+ * Copyright (c) 2018, DaveInga <https://github.com/daveinga>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,70 +25,84 @@
  */
 package net.runelite.client.plugins.fightcave;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 import javax.inject.Inject;
 import net.runelite.api.Client;
-import net.runelite.api.SpriteID;
-import net.runelite.client.game.SpriteManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.components.ComponentConstants;
-import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
+import net.runelite.client.ui.overlay.components.TitleComponent;
 
-public class FightCaveOverlay extends Overlay
+public class FightCaveWaveOverlay extends Overlay
 {
-	private static final Color NOT_ACTIVATED_BACKGROUND_COLOR = new Color(150, 0, 0, 150);
+
+	private final Client client;
+
+	private final FightCavePlugin plugin;
+
+	private final FightCaveConfig config;
+
+	private PanelComponent panelComponent;
 
 	@Inject
-	private Client client;
-
-	@Inject
-	private FightCavePlugin plugin;
-
-	@Inject
-	private SpriteManager spriteManager;
-
-	private PanelComponent imagePanelComponent = new PanelComponent();
-
-	@Inject
-	private FightCaveOverlay(Client client, FightCavePlugin plugin, SpriteManager spriteManager)
+	FightCaveWaveOverlay(Client client, FightCavePlugin plugin, FightCaveConfig config)
 	{
-		setPosition(OverlayPosition.BOTTOM_RIGHT);
+		panelComponent = new PanelComponent();
+		panelComponent.setPreferredSize(new Dimension(150, 0));
+		setPosition(OverlayPosition.TOP_RIGHT);
 		setPriority(OverlayPriority.HIGH);
 		this.client = client;
 		this.plugin = plugin;
-		this.spriteManager = spriteManager;
+		this.config = config;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		final JadAttack attack = plugin.getAttack();
-
-		if (attack == null)
+		if (!plugin.isInFightCaveInstance() || plugin.getCurrentWaveNumber() == -1)
 		{
 			return null;
 		}
+		panelComponent.getChildren().clear();
 
-		final BufferedImage prayerImage = getPrayerImage(attack);
+		if (config.showCurrentWave())
+		{
+			renderWave("Wave " + plugin.getCurrentWaveNumber(), plugin.getCurrentWaveNumber());
+		}
+		if (config.showNextWave() && plugin.isNotFinalWave())
+		{
+			renderWave("Next Wave:", plugin.getNextWaveNumber());
 
-		imagePanelComponent.getChildren().clear();
-		imagePanelComponent.getChildren().add(new ImageComponent(prayerImage));
-		imagePanelComponent.setBackgroundColor(client.isPrayerActive(attack.getPrayer())
-			? ComponentConstants.STANDARD_BACKGROUND_COLOR
-			: NOT_ACTIVATED_BACKGROUND_COLOR);
-
-		return imagePanelComponent.render(graphics);
+		}
+		return panelComponent.render(graphics);
 	}
 
-	private BufferedImage getPrayerImage(JadAttack attack)
+	private void renderWave(String header, int waveNumber)
 	{
-		final int prayerSpriteID = attack == JadAttack.MAGIC ? SpriteID.PRAYER_PROTECT_FROM_MAGIC : SpriteID.PRAYER_PROTECT_FROM_MISSILES;
-		return spriteManager.getSprite(prayerSpriteID, 0);
+		panelComponent.getChildren().add(TitleComponent.builder()
+			.text(header)
+			.color(config.getWaveOverlayHeaderColor())
+			.build());
+
+		HashMap<Integer, Integer> waveMap = FightCaveMappings.intArrayToHashmap(plugin.getWaves().get(waveNumber));
+
+		for (Map.Entry<Integer, Integer> entry : waveMap.entrySet())
+		{
+			int monsterID = entry.getKey();
+			int quantity = entry.getValue();
+			if (quantity <= 0)
+			{
+				continue;
+			}
+
+			panelComponent.getChildren().add(TitleComponent.builder()
+				.text(quantity + "x " + plugin.getMonsters().get(monsterID))
+				.color(config.getWaveTextColor())
+				.build());
+		}
 	}
 }

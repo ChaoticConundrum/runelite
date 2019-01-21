@@ -1,5 +1,8 @@
 /*
  * Copyright (c) 2017, Devin French <https://github.com/devinfrench>
+ * Copyright (c) 2018, DrizzyBot <https://github.com/drizzybot>
+ * Copyright (c) 2018, DaveInga <https://github.com/daveinga>
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,32 +27,53 @@
  */
 package net.runelite.client.plugins.fightcave;
 
+import com.google.common.eventbus.Subscribe;
+import java.util.Map;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
+import net.runelite.api.Actor;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.events.AnimationChanged;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
-import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 
 @PluginDescriptor(
 	name = "Fight Cave",
 	description = "Show what to pray against Jad",
 	tags = {"bosses", "combat", "minigame", "overlay", "prayer", "pve", "pvm"}
 )
+
 public class FightCavePlugin extends Plugin
 {
+	@Inject
+	private Client client;
+
 	@Inject
 	private OverlayManager overlayManager;
 
 	@Inject
-	private FightCaveOverlay overlay;
+	private FightCaveWaveOverlay fightCaveWaveOverlay;
+
+	@Inject
+	private FightCaveMinimapOverlay fightWaveMinimapOverlay;
+
+	@Inject
+	private FightCaveOverlay fightCaveOverlay;
 
 	@Getter(AccessLevel.PACKAGE)
 	@Nullable
@@ -57,18 +81,53 @@ public class FightCavePlugin extends Plugin
 
 	private NPC jad;
 
+	private static final int FIGHT_CAVE_REGION = 9551;
+
+	@Getter(AccessLevel.PACKAGE)
+	private int currentWaveNumber;
+
+	@Getter(AccessLevel.PACKAGE)
+	private int nextWaveNumber;
+
+	@Getter(AccessLevel.PACKAGE)
+	private Map<Integer, String> monsters;
+
+	@Getter(AccessLevel.PACKAGE)
+	private Map<Integer, int[]> waves;
+
+	@Getter(AccessLevel.PACKAGE)
+	private List<Actor> waveMonsters = new ArrayList<>();
+
 	@Override
 	protected void startUp() throws Exception
 	{
-		overlayManager.add(overlay);
+		overlayManager.add(fightCaveOverlay);
+		overlayManager.add(fightCaveWaveOverlay);
+		overlayManager.add(fightWaveMinimapOverlay);
+		monsters = FightCaveMappings.npcNameMapping();
+		waves = FightCaveMappings.waveMapping();
+
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		overlayManager.remove(overlay);
+		overlayManager.remove(fightCaveOverlay);
+		overlayManager.remove(fightCaveWaveOverlay);
+		overlayManager.remove(fightWaveMinimapOverlay);
 		jad = null;
 		attack = null;
+		monsters = null;
+		waves = null;
+		currentWaveNumber = -1;
+		nextWaveNumber = -1;
+
+	}
+
+	@Provides
+	FightCaveConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(FightCaveConfig.class);
 	}
 
 	@Subscribe
@@ -76,10 +135,19 @@ public class FightCavePlugin extends Plugin
 	{
 		final int id = event.getNpc().getId();
 
+
 		if (id == NpcID.TZTOKJAD || id == NpcID.TZTOKJAD_6506)
 		{
 			jad = event.getNpc();
 		}
+
+		final Actor actor = event.getActor();
+
+		if (actor != null)
+		{
+			waveMonsters.add(actor);
+		}
+
 	}
 
 	@Subscribe
@@ -89,6 +157,13 @@ public class FightCavePlugin extends Plugin
 		{
 			jad = null;
 			attack = null;
+		}
+
+		final Actor actor = event.getActor();
+
+		if (actor != null)
+		{
+			waveMonsters.remove(actor);
 		}
 	}
 
@@ -108,5 +183,44 @@ public class FightCavePlugin extends Plugin
 		{
 			attack = JadAttack.RANGE;
 		}
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event)
+	{
+		if (!isInFightCaveInstance())
+		{
+			currentWaveNumber = -1;
+			nextWaveNumber = -1;
+		}
+
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage event)
+	{
+		if (event.getType() != ChatMessageType.SERVER || !isInFightCaveInstance())
+		{
+			return;
+		}
+
+		String message = event.getMessage();
+		if (event.getMessage().contains("Wave:"))
+		{
+			message = message.substring(message.indexOf(": ") + 2);
+			currentWaveNumber = Integer.parseInt(message.substring(0, message.indexOf("<")));
+			nextWaveNumber = currentWaveNumber < 63 ? currentWaveNumber + 1 : -1;
+		}
+
+	}
+
+	protected boolean isInFightCaveInstance()
+	{
+		return ArrayUtils.contains(client.getMapRegions(), FIGHT_CAVE_REGION);
+	}
+
+	public boolean isNotFinalWave()
+	{
+		return currentWaveNumber <= 62;
 	}
 }
